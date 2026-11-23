@@ -1,0 +1,36 @@
+# Portainer Git Stack - LAN only
+# Source repository: https://github.com/hoangthang0106/Stirling-PDF
+# IMPORTANT: confirm host port is unused on the Docker VM/LXC before deploying.
+# Do not commit passwords or IPs to this public repository.
+services:
+  stirling-pdf:
+    # Official pre-built image; deployment YAML is maintained in your fork.
+    # This avoids building the entire source tree on the Proxmox VM/LXC.
+    image: stirlingtools/stirling-pdf:3.5.0
+    container_name: stirling-pdf
+    restart: unless-stopped
+    ports:
+      # LAN_IP and STIRLING_ADMIN_PASSWORD MUST be entered in Portainer.
+      # Set STIRLING_HOST_PORT manually ONLY if 18993 is occupied.
+      - "${LAN_IP:?SET_LAN_IP_IN_PORTAINER}:${STIRLING_HOST_PORT:-18993}:8080/tcp"
+    environment:
+      SECURITY_ENABLELOGIN: "true"
+      SECURITY_INITIALLOGIN_USERNAME: "${STIRLING_ADMIN_USER:-admin}"
+      SECURITY_INITIALLOGIN_PASSWORD: "${STIRLING_ADMIN_PASSWORD:?SET_ADMIN_PASSWORD_IN_PORTAINER}"
+      SYSTEM_DEFAULTLOCALE: "vi-VN"
+      SYSTEM_GOOGLEVISIBILITY: "false"
+    volumes:
+      - stirling_configs:/configs
+      - stirling_logs:/logs
+      - stirling_tessdata:/usr/share/tessdata
+      - stirling_pipeline:/pipeline
+      - stirling_customfiles:/customFiles
+      - stirling_storage:/storage
+
+volumes:
+  stirling_configs:
+  stirling_logs:
+  stirling_tessdata:
+  stirling_pipeline:
+  stirling_customfiles:
+  stirling_storage:
